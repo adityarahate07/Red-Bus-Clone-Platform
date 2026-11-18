@@ -1,0 +1,137 @@
+<div [class]="embedded ? 'notif-embedded' : 'max-w-[1200px] mx-auto px-4 md:px-8 py-8'">
+  <!-- Header -->
+  <div class="notif-header rounded-2xl p-5 md:p-6 mb-6 flex flex-wrap justify-between items-center gap-4">
+    <div>
+      <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+        <i class="fa-solid fa-bell"></i>
+        {{ 'notifCenter.title' | translate }}
+      </h1>
+      <p class="text-xs md:text-sm notif-sub mt-1">{{ 'notifCenter.subtitle' | translate }}</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="unread-pill" *ngIf="unreadCount > 0">
+        {{ 'notifCenter.unreadBadge' | translate:{ count: unreadCount } }}
+      </span>
+      <button type="button" class="btn-outline-n" (click)="markAllRead()" [disabled]="unreadCount === 0">
+        <i class="fa-solid fa-check-double"></i>
+        {{ 'notifCenter.markAllRead' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Preferences + Demo Event Triggers Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Preferences Panel -->
+    <section class="panel-card rounded-2xl p-5">
+      <h2 class="text-base font-bold mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-sliders"></i>
+        {{ 'notifCenter.prefsHeading' | translate }}
+      </h2>
+      <div class="flex flex-col gap-3">
+        <label class="pref-toggle-row">
+          <span><i class="fa-solid fa-window-maximize mr-2"></i>{{ 'notifCenter.channelInApp' | translate }}</span>
+          <input type="checkbox" [(ngModel)]="preferences.inApp" (change)="savePreferences()" />
+        </label>
+        <label class="pref-toggle-row">
+          <span><i class="fa-regular fa-envelope mr-2"></i>{{ 'notifCenter.channelEmail' | translate }}</span>
+          <input type="checkbox" [(ngModel)]="preferences.email" (change)="savePreferences()" />
+        </label>
+        <label class="pref-toggle-row">
+          <span><i class="fa-solid fa-mobile-screen-button mr-2"></i>{{ 'notifCenter.channelPush' | translate }}</span>
+          <input type="checkbox" [(ngModel)]="preferences.push" (change)="savePreferences()" />
+        </label>
+        <label class="pref-toggle-row promo-row">
+          <span><i class="fa-solid fa-tags mr-2"></i>{{ 'notifCenter.promoOptIn' | translate }}</span>
+          <input type="checkbox" [(ngModel)]="preferences.promotionalOptIn" (change)="savePreferences()" />
+        </label>
+      </div>
+    </section>
+
+    <!-- Quick Demo Event Triggers -->
+    <section class="panel-card rounded-2xl p-5">
+      <h2 class="text-base font-bold mb-1 flex items-center gap-2">
+        <i class="fa-solid fa-bolt text-amber-500"></i>
+        {{ 'notifCenter.demoHeading' | translate }}
+      </h2>
+      <p class="text-xs muted-n mb-4">{{ 'notifCenter.demoDesc' | translate }}</p>
+
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button
+          type="button"
+          *ngFor="let evt of eventTypes"
+          class="trigger-chip"
+          (click)="triggerDemoEvent(evt)">
+          <i class="fa-solid" [ngClass]="eventIcon(evt)"></i>
+          {{ ('notifCenter.events.' + evt) | translate }}
+        </button>
+      </div>
+
+      <label class="flex items-center gap-2 text-xs muted-n cursor-pointer pt-2 border-t border-n">
+        <input type="checkbox" [(ngModel)]="simulateFailure" />
+        <span>{{ 'notifCenter.simulateFailure' | translate }}</span>
+      </label>
+    </section>
+  </div>
+
+  <!-- History Filters -->
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <h2 class="text-lg font-bold">{{ 'notifCenter.historyHeading' | translate }}</h2>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="filter-pill" [class.filter-active]="activeFilter === 'all'" (click)="activeFilter = 'all'">
+        {{ 'notifCenter.filters.all' | translate }} ({{ notifications.length }})
+      </button>
+      <button type="button" class="filter-pill" [class.filter-active]="activeFilter === 'unread'" (click)="activeFilter = 'unread'">
+        {{ 'notifCenter.filters.unread' | translate }} ({{ unreadCount }})
+      </button>
+      <button type="button" class="filter-pill" [class.filter-active]="activeFilter === 'failed'" (click)="activeFilter = 'failed'">
+        {{ 'notifCenter.filters.failed' | translate }} ({{ failedCount }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Notification History List -->
+  <div *ngIf="filteredNotifications.length === 0" class="panel-card rounded-xl p-8 text-center muted-n">
+    {{ 'notifCenter.emptyHistory' | translate }}
+  </div>
+
+  <div *ngFor="let item of filteredNotifications" class="panel-card rounded-xl p-4 mb-3" [class.notif-unread]="!item.read">
+    <div class="flex flex-wrap justify-between items-start gap-2">
+      <div class="flex items-start gap-3 flex-1">
+        <i class="fa-solid text-xl mt-1" [ngClass]="eventIcon(item.eventType)"></i>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <strong class="text-sm md:text-base">{{ item.titleKey | translate: localizedParams(item) }}</strong>
+            <span class="event-tag">{{ ('notifCenter.events.' + item.eventType) | translate }}</span>
+          </div>
+          <p class="text-xs md:text-sm msg-body mt-1">
+            {{ item.messageKey | translate: localizedParams(item) }}
+          </p>
+          <div class="text-xs muted-n mt-2">{{ item.createdAt | date: 'medium' }}</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button *ngIf="!item.read" type="button" class="mini-btn" (click)="markRead(item)">
+          {{ 'notifCenter.markRead' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Per-Channel Delivery Status Tracking + Retry -->
+    <div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-n">
+      <div *ngFor="let ch of item.channels" class="channel-badge" [ngClass]="'status-' + ch.status.toLowerCase()">
+        <span>{{ ('notifCenter.channels.' + ch.channel) | translate }}:</span>
+        <strong>{{ ('notifCenter.statuses.' + ch.status) | translate }}</strong>
+        <span class="attempt-txt">({{ 'notifCenter.attempts' | translate:{ count: ch.attempts } }})</span>
+        <button
+          *ngIf="ch.status === 'Failed'"
+          type="button"
+          class="retry-btn"
+          (click)="retry(item, ch)">
+          <i class="fa-solid fa-rotate-right"></i>
+          {{ 'notifCenter.retry' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

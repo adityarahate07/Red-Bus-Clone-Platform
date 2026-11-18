@@ -1,0 +1,16 @@
+<div class="Header">
+    <div class="HeaderOne">
+        <p>
+            {{ 'selectBus.breadcrumbHome' | translate }} &gt;
+            {{ 'selectBus.breadcrumbBusTickets' | translate }} &gt;
+            {{ 'selectBus.breadcrumbBus' | translate:{ from: translationService.translateCity(departure) } }} &gt;
+            {{ 'selectBus.breadcrumbRoute' | translate:{ from: translationService.translateCity(departure), to: translationService.translateCity(arrival) } }}
+        </p>
+        <p>{{ 'selectBus.fareStarts' | translate }}</p>
+    </div>
+    <div class="HeaderTwo">
+        <h3>
+            {{ 'selectBus.departureHeading' | translate:{ to: translationService.translateCity(arrival), date: date } }}
+        </h3>
+    </div>
+</div>

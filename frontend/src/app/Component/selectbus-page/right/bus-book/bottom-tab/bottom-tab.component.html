@@ -1,0 +1,33 @@
+<div class="mainBar">
+    <div (click)="handletabstate(0)">{{ 'bottomTab.amenities' | translate }}</div>
+    <div>|</div>
+    <div (click)="handletabstate(1)">{{ 'bottomTab.boardingAndDropping' | translate }}</div>
+    <div>|</div>
+    <div (click)="handletabstate(2)">{{ 'bottomTab.reviews' | translate }}</div>
+    <div>|</div>
+    <div (click)="handletabstate(3)">{{ 'bottomTab.bookingPolicies' | translate }}</div>
+    <div>|</div>
+    <div (click)="handletabstate(4)">{{ 'bottomTab.viewSeats' | translate }}</div>
+</div>
+
+<div class="displayArea info-tab" *ngIf="tabstate[0]">{{ 'bottomTab.amenitiesInfo' | translate }}</div>
+<div class="displayArea info-tab" *ngIf="tabstate[1]">{{ 'bottomTab.boardingInfo' | translate }}</div>
+<div class="displayArea" *ngIf="tabstate[2]">
+    <app-route-reviews
+        [departure]="routedetials?.departureLocation?.name"
+        [arrival]="routedetials?.arrivalLocation?.name"
+        [compact]="true">
+    </app-route-reviews>
+</div>
+<div class="displayArea info-tab" *ngIf="tabstate[3]">{{ 'bottomTab.policiesInfo' | translate }}</div>
+<div class="displayArea" *ngIf="tabstate[4]">
+    <app-view-seats
+        [filledseats]="filledseats"
+        [seatprice]="seatprice"
+        [routedetails]="routedetials"
+        [busid]="busid"
+        [busarrivaltime]="busarrivaltime"
+        [busdeparturetime]="busdeparturetime"
+        [operatorname]="operatorname">
+    </app-view-seats>
+</div>

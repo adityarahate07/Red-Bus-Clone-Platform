@@ -1,0 +1,36 @@
+.Header {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.HeaderOne {
+  background-color: var(--bg-muted);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 16px;
+  margin-bottom: 10px;
+}
+
+.HeaderOne > p:nth-child(1) {
+  margin: 10px 0px;
+}
+
+.HeaderTwo {
+  padding: 10px 16px;
+  color: var(--text-heading);
+}
+
+.HeaderTwo > * {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.HeaderTwo > button {
+  padding: 5px;
+  width: 100px;
+  background-color: var(--bg-muted);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  outline: none;
+}

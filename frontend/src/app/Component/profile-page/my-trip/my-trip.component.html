@@ -1,0 +1,96 @@
+<div class="SingleTrip" *ngFor="let booking of booking">
+    <div class="SingleTrip__image">
+        <img [src]="randomimage" alt="bus" />
+    </div>
+
+    <div class="trip-action-bar">
+        <span
+            class="trip-status-pill"
+            [class.pill-done]="isCompleted(booking)"
+            [class.pill-cancelled]="isCancelled(booking)">
+            {{
+              (isCancelled(booking)
+                ? 'profile.statusCancelled'
+                : isCompleted(booking)
+                  ? 'profile.statusCompleted'
+                  : 'profile.statusUpcoming') | translate
+            }}
+        </span>
+        <div class="trip-action-btns">
+            <button *ngIf="!isCompleted(booking) && !isCancelled(booking)" type="button" class="trip-btn-outline" (click)="markCompleted(booking)">
+                <i class="fa-solid fa-check"></i>
+                {{ 'profile.markCompleted' | translate }}
+            </button>
+            <button *ngIf="!isCompleted(booking) && !isCancelled(booking)" type="button" class="trip-btn-cancel" (click)="cancelTrip(booking)">
+                <i class="fa-solid fa-xmark"></i>
+                {{ 'profile.cancelTrip' | translate }}
+            </button>
+            <button *ngIf="isCompleted(booking)" type="button" class="trip-btn-primary" (click)="goToReviewRoute(booking)">
+                <i class="fa-solid fa-star"></i>
+                {{ 'profile.writeReview' | translate }}
+            </button>
+        </div>
+    </div>
+
+    <div class="SingleTrip__cards">
+        <div class="SingleTrip__busdetails">
+            <div class="heading">{{ 'myTrip.busDetails' | translate }}</div>
+            <p>
+                <span class="material-icons">radio_button_checked</span>
+                {{ 'myTrip.departureLocation' | translate }}: {{ translationService.translateCity(booking.departureDetails?.city) }}
+            </p>
+            <p>
+                <span class="material-icons">radio_button_checked</span>
+                {{ 'myTrip.departureTime' | translate }}: {{ booking.departureDetails?.time }}:00 {{ 'common.hrs' | translate }}
+            </p>
+            <p>
+                <span class="material-icons">radio_button_checked</span>
+                {{ 'myTrip.departureDate' | translate }}: {{ booking.departureDetails?.date }}
+            </p>
+            <p>
+                <span class="material-icons">radio_button_checked</span>
+                {{ 'myTrip.arrivalLocation' | translate }}: {{ translationService.translateCity(booking.arrivalDetails?.city) }}
+            </p>
+            <p>
+                <span class="material-icons">radio_button_checked</span>
+                {{ 'myTrip.arrivalTime' | translate }}: {{ booking.arrivalDetails?.time }}:00 {{ 'common.hrs' | translate }}
+            </p>
+            <p>
+                <span class="material-icons">radio_button_checked</span>
+                {{ 'myTrip.arrivalDate' | translate }}: {{ booking.arrivalDetails?.date }}
+            </p>
+            <p>
+                <span class="material-icons">radio_button_checked</span>
+                {{ 'myTrip.totalFare' | translate }}: {{ 'common.rs' | translate }} {{ booking.fare }}
+            </p>
+        </div>
+
+        <div class="SingleTrip__persondetails">
+            <div class="heading">{{ 'myTrip.passengerDetails' | translate }}</div>
+            <p>
+                <span class="material-icons">arrow_right_alt</span>
+                {{ 'myTrip.contactEmail' | translate }}: {{ booking.email }}
+            </p>
+            <p>
+                <span class="material-icons">arrow_right_alt</span>
+                {{ 'myTrip.contactPhone' | translate }}: {{ booking.phoneNumber }}
+            </p>
+            <div class="SingleTrip__customerDetails__passenger">
+                <div *ngFor="let passenger of booking.passengerDetails">
+                    <p>
+                        <span class="material-icons">arrow_right_alt</span>
+                        {{ 'myTrip.name' | translate }}: {{ passenger.name }}
+                    </p>
+                    <p>
+                        <span class="material-icons">arrow_right_alt</span>
+                        {{ 'myTrip.gender' | translate }}: {{ passenger.gender }}
+                    </p>
+                    <p>
+                        <span class="material-icons">arrow_right_alt</span>
+                        {{ 'myTrip.age' | translate }}: {{ passenger.age }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

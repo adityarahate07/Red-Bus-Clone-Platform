@@ -1,0 +1,35 @@
+.proceedButton {
+  width: 100%;
+  height: 40px;
+  padding: 6px 39px 7px;
+  display: inline-block;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 500;
+  overflow: hidden;
+  position: relative;
+  text-decoration: none;
+  transition: 0.15s;
+  border: none;
+  text-align: center;
+  background-color: var(--brand-primary);
+  color: var(--text-inverse);
+  margin-top: 30px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.proceedButton:hover {
+  background-color: var(--brand-primary-hover);
+}
+
+.example-container {
+  width: 100%;
+  max-width: 600px;
+  height: 500px;
+  background-color: transparent;
+}
+
+::ng-deep .mat-drawer-container {
+  background-color: transparent;
+}

@@ -1,0 +1,95 @@
+<div class="mainContainer">
+    <div class="mainContainer1">
+        <div class="mainContainer1Left">
+            <i class="material-icons">donut_large</i>
+        </div>
+        <div class="mainContainer1Right">
+            <div>
+                <ng-container *ngFor="let index of generatearray(10)">
+                    <app-small-seats [seatno]="index" [alreadybookedseats]="filledseats"
+                        (seatselected)="handleselectedseats($event)" [selectedseats]="selectedseats"></app-small-seats>
+                </ng-container>
+            </div>
+            <div>
+                <ng-container *ngFor="let index of generatearray(10)">
+                    <app-small-seats [seatno]="10 + index" [alreadybookedseats]="filledseats"
+                        (seatselected)="handleselectedseats($event)" [selectedseats]="selectedseats"></app-small-seats>
+                </ng-container>
+            </div>
+            <div></div>
+            <div>
+                <ng-container *ngFor="let index of generatearray(10)">
+                    <app-small-seats [seatno]="20 + index" [alreadybookedseats]="filledseats"
+                        (seatselected)="handleselectedseats($event)" [selectedseats]="selectedseats"></app-small-seats>
+                </ng-container>
+            </div>
+            <div>
+                <ng-container *ngFor="let index of generatearray(10)">
+                    <app-small-seats [seatno]="30 + index" [alreadybookedseats]="filledseats"
+                        (seatselected)="handleselectedseats($event)" [selectedseats]="selectedseats"></app-small-seats>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+    <div class="mainContainer2">
+        <div class="mainContainer21">
+            <div>{{ 'seats.boardingAndDropping' | translate }}</div>
+            <div>{{ 'seats.change' | translate }}</div>
+        </div>
+        <div class="mainContainer22">
+            <div>
+                <div>
+                    <span class="loc-primary">
+                        <mat-icon>flight_takeoff</mat-icon>&nbsp;&nbsp;{{ translationService.translateCity(routedetails?.departureLocation?.name) }}
+                    </span>
+                    <br />
+                    <span class="loc-muted">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ 'seats.departureLocation' | translate }}
+                    </span>
+                </div>
+            </div>
+            <div class="time-bold">{{ busdeparturetime }}:00</div>
+        </div>
+        <div class="mainContainer23">
+            <div>
+                <div>
+                    <span class="loc-primary">
+                        <mat-icon>flight_land</mat-icon>&nbsp;&nbsp;{{ translationService.translateCity(routedetails?.arrivalLocation?.name) }}
+                    </span>
+                    <br />
+                    <span class="loc-muted">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ 'seats.arrivalLocation' | translate }}
+                    </span>
+                </div>
+            </div>
+            <div class="time-bold">{{ busarrivaltime }}:00</div>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="mainContainer24">
+            <div>{{ 'seats.seatNo' | translate }}</div>
+            <div>{{ selectedseats.length ? selectedseats.join(', ') : ('seats.noneSelected' | translate) }}</div>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="mainContainer25">{{ 'seats.fareDetails' | translate }}</div>
+        <div class="mainContainer26">
+            <div>
+                <span class="loc-primary">{{ 'seats.amount' | translate }}</span>
+                <br />
+                <span class="tax-note">{{ 'seats.taxesNote' | translate }}</span>
+            </div>
+            <div>{{ 'common.rs' | translate }} {{ selectedseats.length * seatprice }}</div>
+        </div>
+        <div class="mainContainer27">
+            <app-form-drawer
+                [selectedseat]="selectedseats"
+                [seatprice]="seatprice"
+                [routedetails]="routedetails"
+                [busid]="busid"
+                [busarrivaltime]="busarrivaltime"
+                [busdeparturetime]="busdeparturetime"
+                [operatorname]="operatorname">
+            </app-form-drawer>
+        </div>
+    </div>
+</div>

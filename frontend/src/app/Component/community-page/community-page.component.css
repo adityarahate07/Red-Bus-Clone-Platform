@@ -1,0 +1,230 @@
+.community-page {
+  color: var(--text-primary);
+}
+
+.community-hero {
+  background: linear-gradient(135deg, var(--brand-primary), #991b1b);
+  color: #ffffff;
+  box-shadow: var(--shadow-md);
+}
+
+.hero-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.section-heading {
+  color: var(--text-heading);
+}
+
+.trending-card,
+.composer-card,
+.post-card,
+.empty-box {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.trending-card:hover {
+  border-color: var(--brand-primary);
+}
+
+.border-theme {
+  border-color: var(--border-color);
+}
+
+.muted-text {
+  color: var(--text-muted);
+}
+
+.story-body {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.topic-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  background-color: var(--bg-muted);
+  color: var(--brand-primary);
+  border: 1px solid var(--border-color);
+}
+
+.verified-pill {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.status-pill {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background-color: rgba(245, 158, 11, 0.18);
+  color: #d97706;
+  font-weight: 700;
+}
+
+.pill-hidden {
+  background-color: rgba(239, 68, 68, 0.18);
+  color: #ef4444;
+}
+
+.board-tab {
+  padding: 8px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--border-strong);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.board-tab-active {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #ffffff;
+}
+
+.mod-count {
+  padding: 1px 7px;
+  border-radius: 99px;
+  background-color: #f59e0b;
+  color: #111827;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.field-lbl {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+
+.field-ctrl {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  font-size: 14px;
+  outline: none;
+}
+
+.search-ctrl {
+  min-width: 210px;
+}
+
+.sort-ctrl {
+  width: auto;
+}
+
+.tips-box,
+.sub-panel,
+.comment-item,
+.reports-summary {
+  background-color: var(--bg-soft-card);
+  border: 1px solid var(--border-color);
+}
+
+.tip-chip {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.post-action-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.post-action-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.liked-btn {
+  color: #e11d48;
+  border-color: #e11d48;
+}
+
+.report-action {
+  color: var(--brand-primary);
+}
+
+.btn-brand,
+.btn-outline-theme,
+.btn-approve,
+.btn-danger-solid {
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-brand {
+  background-color: #ffffff;
+  color: #b91c1c;
+  border: none;
+}
+
+.composer-card .btn-brand,
+.post-card .btn-brand {
+  background-color: var(--brand-primary);
+  color: #ffffff;
+}
+
+.btn-outline-theme {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+}
+
+.community-hero .btn-outline-theme {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-approve {
+  background-color: #16a34a;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-danger-solid {
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+}

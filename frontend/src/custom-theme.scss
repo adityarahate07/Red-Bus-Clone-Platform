@@ -1,0 +1,41 @@
+// Custom Theming for Angular Material
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$frontend-primary: mat.define-palette(mat.$indigo-palette);
+$frontend-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$frontend-warn: mat.define-palette(mat.$red-palette);
+
+$frontend-theme: mat.define-light-theme((
+  color: (
+    primary: $frontend-primary,
+    accent: $frontend-accent,
+    warn: $frontend-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0
+));
+
+$frontend-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $frontend-primary,
+    accent: $frontend-accent,
+    warn: $frontend-warn,
+  )
+));
+
+@include mat.all-component-themes($frontend-theme);
+
+// Scope dark theme color mixins to the Material components used across the app
+.dark-theme {
+  @include mat.menu-color($frontend-dark-theme);
+  @include mat.button-color($frontend-dark-theme);
+  @include mat.datepicker-color($frontend-dark-theme);
+  @include mat.dialog-color($frontend-dark-theme);
+  @include mat.table-color($frontend-dark-theme);
+  @include mat.icon-color($frontend-dark-theme);
+  @include mat.sidenav-color($frontend-dark-theme);
+  @include mat.divider-color($frontend-dark-theme);
+  @include mat.tooltip-color($frontend-dark-theme);
+}

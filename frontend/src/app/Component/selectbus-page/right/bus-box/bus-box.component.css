@@ -1,0 +1,207 @@
+* {
+  box-sizing: border-box;
+}
+
+.bus-box {
+  width: 100%;
+  min-height: 180px;
+  height: auto;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-surface);
+  margin-top: 20px;
+  padding: 14px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 400;
+  border-radius: 6px;
+  transition: box-shadow 0.25s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.bus-box:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.bus-box > * {
+  width: 100%;
+}
+
+.busBoxSection1 {
+  height: 40%;
+  margin-bottom: 1%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.busBoxSection1 > div {
+  height: 100%;
+}
+
+.busBoxSection11 { width: 25%; }
+.busBoxSection12 { width: 10%; }
+.busBoxSection13 { width: 10%; }
+.busBoxSection14 { width: 14%; }
+.busBoxSection16 { width: 15%; }
+.busBoxSection17 { width: 15%; }
+
+.busBoxSection11 > div:nth-child(1),
+.busBoxSection12 > div:nth-child(1),
+.busBoxSection14 > div:nth-child(1) {
+  color: var(--text-heading);
+  line-height: 24px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.busBoxSection11 > div:nth-child(2),
+.busBoxSection12 > div:nth-child(2),
+.busBoxSection14 > div:nth-child(2) {
+  color: var(--text-muted);
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.busBoxSection13 > div {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.busBoxSection15 {
+  width: 10%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.busBoxSection15 > div {
+  width: 45px;
+  height: 25px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.busBoxSection15 > :nth-child(1) {
+  background-color: #62c18b;
+  color: white;
+  font-weight: 100;
+  border-radius: 4px;
+  margin-bottom: 3px;
+}
+
+.busBoxSection15 > :nth-child(1) > :nth-child(1),
+.busBoxSection15 > :nth-child(2) > :nth-child(1) {
+  font-size: 17px;
+}
+
+.busBoxSection15 > :nth-child(1) > :nth-child(2),
+.busBoxSection15 > :nth-child(2) > :nth-child(2) {
+  font-size: 12px;
+}
+
+.busBoxSection16 > div:nth-child(1) {
+  width: 90%;
+  height: 17px;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: flex-start;
+  font-size: 15px;
+}
+
+.busBoxSection16 > div:nth-child(1) > div:nth-child(2) {
+  color: var(--text-heading);
+  font-weight: 700;
+  margin-left: 7px;
+}
+
+.busBoxSection16 > div:nth-child(2) {
+  width: 90%;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 7px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.busBoxSection16 > div:nth-child(2) > :nth-child(1) {
+  color: var(--brand-primary);
+  font-size: 15px;
+}
+
+.busBoxSection16 > div:nth-child(2) > div:nth-child(2) {
+  margin-left: 7px;
+}
+
+.busBoxSection17 > div:nth-child(1) {
+  height: 4px;
+  width: 72px;
+  border-radius: 3px;
+  background-color: var(--brand-primary);
+}
+
+.busBoxSection17 > div:nth-child(2),
+.busBoxSection17 > div:nth-child(3) {
+  margin-top: 7px;
+  display: flex;
+  color: var(--text-muted);
+}
+
+.busBoxSection17 > div:nth-child(2) > div:nth-child(1),
+.busBoxSection17 > div:nth-child(3) > div:nth-child(1) {
+  margin-right: 4px;
+  font-weight: 500;
+  color: var(--text-heading);
+}
+
+.busBoxSection2 {
+  height: 16%;
+  margin-bottom: 1%;
+  display: flex;
+  align-items: center;
+}
+
+.busBoxSection21 {
+  width: 160px;
+  height: 100%;
+  color: var(--text-secondary);
+}
+
+.busBoxSection22 {
+  width: auto;
+  display: flex;
+}
+
+.busBoxSection22 > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  margin-right: 10px;
+  border-radius: 3px;
+  background-color: var(--bg-muted);
+  color: var(--text-secondary);
+  padding: 2.5px 8px;
+  font-size: 11px;
+}
+
+.busBoxSection3 {
+  min-height: 45%;
+  height: auto;
+}
+
+@media (max-width: 900px) {
+  .busBoxSection1 {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  .busBoxSection11,
+  .busBoxSection12,
+  .busBoxSection13,
+  .busBoxSection14,
+  .busBoxSection15,
+  .busBoxSection16,
+  .busBoxSection17 {
+    width: 48%;
+  }
+}

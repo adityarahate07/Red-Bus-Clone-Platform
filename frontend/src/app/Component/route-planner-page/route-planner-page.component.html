@@ -1,0 +1,240 @@
+<div class="planner-page max-w-[1320px] mx-auto px-4 md:px-8 py-8">
+  <!-- Header -->
+  <div class="planner-hero rounded-2xl p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold flex items-center gap-2">
+        <i class="fa-solid fa-route"></i>
+        {{ 'routePlanner.title' | translate }}
+      </h1>
+      <p class="text-xs md:text-sm hero-sub mt-1">{{ 'routePlanner.subtitle' | translate }}</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="btn-live" [class.live-active]="liveTrafficEnabled" (click)="toggleLiveTraffic()">
+        <i class="fa-solid fa-satellite-dish"></i>
+        {{ (liveTrafficEnabled ? 'routePlanner.liveTrafficOn' : 'routePlanner.liveTrafficOff') | translate }}
+      </button>
+      <button type="button" class="btn-hero-outline" (click)="planRoutes(false, true)">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        {{ 'routePlanner.refreshTraffic' | translate }}
+      </button>
+      <button type="button" class="btn-hero-warn" (click)="planRoutes(true, true)">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        {{ 'routePlanner.simulateHeavy' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Heavy Traffic Auto-Suggestion Alert Banner -->
+  <div *ngIf="selectedRoute?.trafficLevel === 'Heavy' && alternativeRoute" class="heavy-alert rounded-xl p-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <div class="flex items-start gap-3">
+      <i class="fa-solid fa-triangle-exclamation text-xl mt-1 text-red-500"></i>
+      <div>
+        <strong class="text-sm md:text-base">{{ 'routePlanner.heavyAlertTitle' | translate }}</strong>
+        <p class="text-xs md:text-sm mt-1">
+          {{ 'routePlanner.heavyAlertMsg' | translate:{
+            routeName: (selectedRoute!.nameKey | translate),
+            delay: selectedRoute!.delayMinutes,
+            altName: (alternativeRoute!.nameKey | translate),
+            saved: timeSavedByAlternative
+          } }}
+        </p>
+      </div>
+    </div>
+    <button type="button" class="btn-switch" (click)="switchToAlternative()">
+      <i class="fa-solid fa-shuffle"></i>
+      {{ 'routePlanner.switchAltBtn' | translate }}
+    </button>
+  </div>
+
+  <!-- Main Grid: Controls + Interactive Leaflet Map -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+    <!-- Left Column: Route Controls & Save -->
+    <div class="lg:col-span-4 flex flex-col gap-5">
+      <div class="planner-card rounded-2xl p-5">
+        <div class="mb-4">
+          <label class="p-label">{{ 'routePlanner.startLabel' | translate }}</label>
+          <select class="p-input" [(ngModel)]="startCity" (change)="planRoutes(false)">
+            <option *ngFor="let c of cities" [value]="c.name">
+              {{ ('cities.' + c.name) | translate }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="p-label">{{ 'routePlanner.destinationLabel' | translate }}</label>
+          <select class="p-input" [(ngModel)]="destinationCity" (change)="planRoutes(false)">
+            <option *ngFor="let c of cities" [value]="c.name">
+              {{ ('cities.' + c.name) | translate }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="p-label">{{ 'routePlanner.waypointsLabel' | translate }}</label>
+          <div class="flex gap-2">
+            <select class="p-input flex-1" [(ngModel)]="waypointToAdd">
+              <option value="">{{ 'routePlanner.selectWaypoint' | translate }}</option>
+              <option *ngFor="let c of availableWaypoints" [value]="c.name">
+                {{ ('cities.' + c.name) | translate }}
+              </option>
+            </select>
+            <button type="button" class="btn-brand-p" (click)="addWaypoint()">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+
+          <div class="flex flex-wrap gap-2 mt-3" *ngIf="waypoints.length > 0">
+            <span *ngFor="let wp of waypoints; let i = index" class="wp-chip">
+              {{ i + 1 }}. {{ ('cities.' + wp) | translate }}
+              <button type="button" (click)="removeWaypoint(wp)" class="wp-remove">&times;</button>
+            </span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-brand-p w-full justify-center" (click)="planRoutes(false, true)">
+          <i class="fa-solid fa-magnifying-glass-location"></i>
+          {{ 'routePlanner.planBtn' | translate }}
+        </button>
+      </div>
+
+      <!-- Save Frequent Route -->
+      <div class="planner-card rounded-2xl p-5">
+        <h3 class="text-sm font-bold mb-3">{{ 'routePlanner.saveRouteTitle' | translate }}</h3>
+        <div class="flex gap-2">
+          <input
+            class="p-input flex-1"
+            type="text"
+            [(ngModel)]="saveRouteName"
+            [placeholder]="'routePlanner.routeNamePlaceholder' | translate" />
+          <button type="button" class="btn-brand-p" (click)="saveCurrentRoute()">
+            <i class="fa-regular fa-bookmark"></i>
+            {{ 'routePlanner.saveBtn' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Interactive Leaflet OpenStreetMap -->
+    <div class="lg:col-span-8 planner-card rounded-2xl p-4 flex flex-col">
+      <div id="route-planner-map" class="leaflet-canvas rounded-xl"></div>
+      <div class="flex flex-wrap justify-between items-center gap-2 mt-3 text-xs muted-p">
+        <span>{{ 'routePlanner.mapLegend' | translate }}</span>
+        <span *ngIf="selectedRoute" class="font-semibold">
+          {{ selectedRoute.nameKey | translate }} • {{ selectedRoute.distanceKm }} {{ 'routePlanner.km' | translate }} •
+          {{ 'routePlanner.etaAt' | translate:{ time: selectedRoute.etaClockTime } }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suggested Routes Cards -->
+  <section class="mb-6">
+    <h2 class="text-lg font-bold mb-3">{{ 'routePlanner.suggestedRoutes' | translate }}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div
+        *ngFor="let route of routes"
+        (click)="selectRoute(route.id)"
+        class="planner-card route-option-card rounded-xl p-4 cursor-pointer"
+        [class.route-selected]="route.id === selectedRouteId">
+        <div class="flex justify-between items-start gap-2 mb-2">
+          <strong class="text-base">{{ route.nameKey | translate }}</strong>
+          <span *ngIf="route.isRecommended" class="rec-badge">{{ 'routePlanner.recommended' | translate }}</span>
+        </div>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="traffic-pill" [ngClass]="'traffic-' + route.trafficLevel.toLowerCase()">
+            {{ ('routePlanner.trafficLevels.' + route.trafficLevel) | translate }}
+          </span>
+          <span class="text-xs muted-p">
+            {{ route.delayMinutes > 0 ? ('routePlanner.delayFmt' | translate:{ mins: route.delayMinutes }) : ('routePlanner.noDelay' | translate) }}
+          </span>
+        </div>
+        <div class="flex justify-between text-sm pt-2 border-t border-p">
+          <span><strong>{{ route.distanceKm }}</strong> {{ 'routePlanner.km' | translate }}</span>
+          <span><strong>{{ formatDuration(route.etaMinutes) }}</strong></span>
+        </div>
+        <div class="text-xs muted-p mt-1">
+          {{ 'routePlanner.etaAt' | translate:{ time: route.etaClockTime } }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Side-by-Side Comparison Table -->
+  <section class="planner-card rounded-2xl p-5 mb-6 overflow-x-auto">
+    <h2 class="text-lg font-bold mb-4">{{ 'routePlanner.comparisonTitle' | translate }}</h2>
+    <table class="compare-table w-full text-sm text-left">
+      <thead>
+        <tr>
+          <th>{{ 'routePlanner.colRoute' | translate }}</th>
+          <th>{{ 'routePlanner.colDistance' | translate }}</th>
+          <th>{{ 'routePlanner.colBaseTime' | translate }}</th>
+          <th>{{ 'routePlanner.colTraffic' | translate }}</th>
+          <th>{{ 'routePlanner.colDelay' | translate }}</th>
+          <th>{{ 'routePlanner.colEta' | translate }}</th>
+          <th>{{ 'routePlanner.colAction' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let route of routes" [class.row-active]="route.id === selectedRouteId">
+          <td class="font-semibold">
+            {{ route.nameKey | translate }}
+            <span *ngIf="route.isRecommended" class="rec-badge ml-1">{{ 'routePlanner.recommended' | translate }}</span>
+          </td>
+          <td>{{ route.distanceKm }} {{ 'routePlanner.km' | translate }}</td>
+          <td>{{ formatDuration(route.baseMinutes) }}</td>
+          <td>
+            <span class="traffic-pill" [ngClass]="'traffic-' + route.trafficLevel.toLowerCase()">
+              {{ ('routePlanner.trafficLevels.' + route.trafficLevel) | translate }}
+            </span>
+          </td>
+          <td>
+            {{ route.delayMinutes > 0 ? ('routePlanner.delayFmt' | translate:{ mins: route.delayMinutes }) : ('routePlanner.noDelay' | translate) }}
+          </td>
+          <td class="font-bold">{{ formatDuration(route.etaMinutes) }}</td>
+          <td>
+            <button type="button" class="mini-select-btn" (click)="selectRoute(route.id)">
+              {{ (route.id === selectedRouteId ? 'routePlanner.selected' : 'routePlanner.selectRoute') | translate }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Saved Frequent Routes -->
+  <section class="planner-card rounded-2xl p-5">
+    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+      <i class="fa-solid fa-bookmark"></i>
+      {{ 'routePlanner.savedRoutesTitle' | translate }}
+    </h2>
+
+    <div *ngIf="savedRoutes.length === 0" class="text-sm muted-p">
+      {{ 'routePlanner.noSavedRoutes' | translate }}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div *ngFor="let sr of savedRoutes" class="saved-card rounded-xl p-4 flex flex-wrap justify-between items-center gap-3">
+        <div>
+          <strong class="text-sm">{{ sr.name }}</strong>
+          <div class="text-xs muted-p mt-1">
+            {{ ('cities.' + sr.startCity) | translate }}
+            <span *ngFor="let wp of sr.waypoints"> → {{ ('cities.' + wp) | translate }}</span>
+            → {{ ('cities.' + sr.destinationCity) | translate }}
+          </div>
+          <div class="text-xs muted-p mt-1">
+            {{ sr.distanceKm }} {{ 'routePlanner.km' | translate }} • {{ formatDuration(sr.estimatedMinutes) }}
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" class="mini-select-btn" (click)="loadSavedRoute(sr)">
+            {{ 'routePlanner.loadRoute' | translate }}
+          </button>
+          <button type="button" class="mini-delete-btn" (click)="deleteSavedRoute(sr._id)">
+            {{ 'routePlanner.deleteRoute' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

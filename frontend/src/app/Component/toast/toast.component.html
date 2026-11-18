@@ -1,0 +1,24 @@
+<div class="toast-stack" aria-live="polite" aria-atomic="true">
+  <div
+    *ngFor="let toast of toasts$ | async; trackBy: trackById"
+    class="toast-item"
+    [ngClass]="'toast-' + toast.type"
+    role="status">
+    <i
+      class="fa-solid toast-icon"
+      [ngClass]="{
+        'fa-circle-check': toast.type === 'success',
+        'fa-triangle-exclamation': toast.type === 'warning',
+        'fa-circle-xmark': toast.type === 'error',
+        'fa-circle-info': toast.type === 'info'
+      }"></i>
+    <span class="toast-message">{{ toast.translationKey | translate: toast.params }}</span>
+    <button
+      type="button"
+      class="toast-close"
+      (click)="dismiss(toast.id)"
+      [attr.aria-label]="'common.close' | translate">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+</div>

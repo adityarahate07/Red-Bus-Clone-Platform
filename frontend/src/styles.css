@@ -1,0 +1,228 @@
+/* Global Theme Variables & Base Styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+:root[data-theme='light'] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-muted: #f8f4f4;
+  --bg-hover: #f3f4f6;
+  --bg-subtle: #eeeded;
+  --bg-soft-card: #f8f8f8;
+  --bg-navbar: #ffffff;
+  --bg-footer: #f7f7f7;
+
+  --text-primary: #1f2937;
+  --text-heading: #3e3e52;
+  --text-secondary: #4a4a4a;
+  --text-muted: #7e7e8c;
+  --text-subtle: #6b7280;
+  --text-inverse: #ffffff;
+
+  --border-color: #e5e7eb;
+  --border-strong: #d1d5db;
+  --divider-color: #dedede;
+
+  --brand-primary: #d84e55;
+  --brand-primary-hover: #c03c43;
+  --brand-accent: #5279d0;
+
+  --input-bg: #ffffff;
+  --input-border: #bababa;
+  --input-text: #374151;
+  --input-placeholder: #9ca3af;
+
+  --badge-warning-bg: #fff181;
+  --badge-warning-text: #333333;
+  --badge-info-bg: #ffeab8;
+  --badge-info-text: #1c1c1c;
+  --passenger-banner-bg: #fae5e5;
+  --passenger-banner-text: #4a4a4a;
+
+  --seat-available: #2d2d3a;
+  --seat-selected: #2563eb;
+  --seat-booked: #ef4444;
+
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.14);
+}
+
+:root[data-theme='dark'],
+.dark-theme {
+  --bg-primary: #0f172a;
+  --bg-secondary: #131c31;
+  --bg-surface: #1e293b;
+  --bg-elevated: #263348;
+  --bg-muted: #1e293b;
+  --bg-hover: #334155;
+  --bg-subtle: #162033;
+  --bg-soft-card: #1e293b;
+  --bg-navbar: #111827;
+  --bg-footer: #0b1120;
+
+  --text-primary: #f1f5f9;
+  --text-heading: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-subtle: #94a3b8;
+  --text-inverse: #ffffff;
+
+  --border-color: #334155;
+  --border-strong: #475569;
+  --divider-color: #334155;
+
+  --brand-primary: #e05a61;
+  --brand-primary-hover: #d84e55;
+  --brand-accent: #7aa2f7;
+
+  --input-bg: #0f172a;
+  --input-border: #475569;
+  --input-text: #f1f5f9;
+  --input-placeholder: #94a3b8;
+
+  --badge-warning-bg: #423310;
+  --badge-warning-text: #fde68a;
+  --badge-info-bg: #3b2a14;
+  --badge-info-text: #fed7aa;
+  --passenger-banner-bg: #3b1d24;
+  --passenger-banner-text: #fecdd3;
+
+  --seat-available: #cbd5e1;
+  --seat-selected: #60a5fa;
+  --seat-booked: #f87171;
+
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.55);
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::-webkit-scrollbar {
+  background: var(--bg-primary);
+  width: 0;
+}
+
+/* Global Dark Mode overrides for Angular Material overlays and components */
+.dark-theme .mat-mdc-menu-panel,
+.dark-theme .mat-mdc-dialog-surface,
+.dark-theme .mat-datepicker-content,
+.dark-theme .mat-drawer {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color);
+}
+
+.dark-theme .mat-mdc-menu-item,
+.dark-theme .mat-mdc-menu-item-text,
+.dark-theme .mat-calendar-body-cell-content,
+.dark-theme .mat-calendar-table-header,
+.dark-theme .mat-calendar-period-button,
+.dark-theme .mat-calendar-previous-button,
+.dark-theme .mat-calendar-next-button,
+.dark-theme .mat-mdc-dialog-title,
+.dark-theme .mat-mdc-dialog-content {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .mat-mdc-menu-item:hover:not([disabled]) {
+  background-color: var(--bg-hover) !important;
+}
+
+.dark-theme .mat-mdc-table {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .mat-mdc-header-cell,
+.dark-theme .mat-mdc-cell {
+  color: var(--text-primary) !important;
+  border-bottom-color: var(--border-color) !important;
+}
+
+.dark-theme .mat-divider {
+  border-top-color: var(--border-color) !important;
+}
+
+/* Reusable semantic helper classes backed by CSS variables */
+.theme-surface {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.theme-navbar {
+  background-color: var(--bg-navbar);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.theme-footer {
+  background-color: var(--bg-footer);
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+.theme-card {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.theme-border {
+  border-color: var(--border-color);
+}
+
+.theme-text-heading {
+  color: var(--text-heading);
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary);
+}
+
+.theme-text-muted {
+  color: var(--text-muted);
+}
+
+.theme-input {
+  background-color: transparent;
+  color: var(--input-text);
+}
+
+.theme-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* Leaflet Dark Theme Polish */
+.dark-theme .leaflet-tile-pane {
+  filter: brightness(0.75) contrast(1.08) saturate(0.85);
+}
+
+.dark-theme .leaflet-popup-content-wrapper,
+.dark-theme .leaflet-popup-tip {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+}
+
+.custom-map-pin {
+  background: transparent;
+  border: none;
+}

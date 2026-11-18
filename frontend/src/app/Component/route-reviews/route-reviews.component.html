@@ -1,0 +1,222 @@
+<section class="reviews-wrapper" [class.compact-mode]="compact">
+  <div class="reviews-header">
+    <div>
+      <h2 class="reviews-title">{{ 'reviews.sectionTitle' | translate }}</h2>
+      <p class="reviews-route-label" *ngIf="departure && arrival">
+        {{ translationService.translateCity(departure) }} → {{ translationService.translateCity(arrival) }}
+      </p>
+    </div>
+
+    <div class="rating-summary-box">
+      <div class="avg-score-block">
+        <div class="avg-number">{{ summary.averageRating || '0.0' }}</div>
+        <div class="avg-stars">
+          <i
+            *ngFor="let s of starInputs"
+            class="fa-solid fa-star"
+            [class.star-filled]="s <= (summary.averageRating + 0.25)"></i>
+        </div>
+        <div class="avg-meta">
+          {{ 'reviews.basedOn' | translate:{ count: summary.totalReviews } }}
+        </div>
+      </div>
+
+      <div class="breakdown-bars">
+        <div *ngFor="let level of starLevels" class="bar-row">
+          <span class="bar-label">{{ 'reviews.starLabel' | translate:{ stars: level } }}</span>
+          <div class="bar-track">
+            <div class="bar-fill" [style.width.%]="getBreakdownPercent(level)"></div>
+          </div>
+          <span class="bar-count">{{ summary.ratingBreakdown[level] || 0 }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Write a Review Panel -->
+  <div class="review-composer-card">
+    <h3 class="sub-heading">{{ 'reviews.writeReviewTitle' | translate }}</h3>
+
+    <!-- Case 1: Not logged in -->
+    <div *ngIf="!currentUser" class="gate-notice">
+      <p>{{ 'reviews.signInToReview' | translate }}</p>
+      <button type="button" class="btn-primary-brand" (click)="signInDemo()">
+        <i class="fa-solid fa-user-check"></i>
+        {{ 'navbar.demoSignIn' | translate }}
+      </button>
+    </div>
+
+    <!-- Case 2: Logged in, no completed journey on this route -->
+    <div *ngIf="currentUser && completedJourneys.length === 0" class="gate-notice">
+      <i class="fa-solid fa-lock"></i>
+      <span>{{ 'reviews.completedJourneyOnly' | translate }}</span>
+    </div>
+
+    <!-- Case 3: Logged in, completed journeys exist, but all already reviewed -->
+    <div *ngIf="currentUser && completedJourneys.length > 0 && eligibleJourneys.length === 0" class="gate-notice gate-success">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>{{ 'reviews.alreadyReviewedAll' | translate }}</span>
+    </div>
+
+    <!-- Case 4: Eligible completed journey -> Show Review Form -->
+    <div *ngIf="currentUser && eligibleJourneys.length > 0" class="composer-form">
+      <div class="form-row">
+        <label class="field-label">{{ 'reviews.selectJourney' | translate }}</label>
+        <select class="field-input" [(ngModel)]="selectedBookingId">
+          <option *ngFor="let j of eligibleJourneys" [value]="j.bookingId">
+            {{ 'reviews.journeyOption' | translate:{ date: j.journeyDate, operator: j.operatorName } }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label class="field-label">{{ 'reviews.yourRating' | translate }}</label>
+        <div class="star-picker">
+          <button
+            type="button"
+            *ngFor="let star of starInputs"
+            class="star-btn"
+            (mouseenter)="hoverRating = star"
+            (mouseleave)="hoverRating = 0"
+            (click)="setRating(star)"
+            [attr.aria-label]="star + ' stars'">
+            <i
+              class="fa-solid fa-star"
+              [class.star-filled]="star <= (hoverRating || newRating)"></i>
+          </button>
+          <span class="picked-label" *ngIf="newRating > 0">{{ newRating }} / 5</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="field-label">{{ 'reviews.yourReview' | translate }}</label>
+        <textarea
+          class="field-input"
+          rows="3"
+          [(ngModel)]="newComment"
+          [placeholder]="'reviews.reviewPlaceholder' | translate"></textarea>
+        <div class="char-helper" [class.char-ok]="newComment.trim().length >= 20">
+          {{ 'reviews.charCount' | translate:{ count: newComment.trim().length } }}
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="btn-primary-brand"
+        [disabled]="submitting"
+        (click)="submitReview()">
+        {{ 'reviews.submitReview' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Recent Verified Reviews -->
+  <div class="reviews-list-section">
+    <h3 class="sub-heading">{{ 'reviews.recentReviews' | translate }} ({{ summary.totalReviews }})</h3>
+
+    <div *ngIf="summary.reviews.length === 0" class="empty-reviews">
+      {{ 'reviews.noReviews' | translate }}
+    </div>
+
+    <div *ngFor="let review of summary.reviews" class="review-card">
+      <div class="review-card-top">
+        <div>
+          <div class="reviewer-row">
+            <strong class="reviewer-name">{{ review.userName }}</strong>
+            <span class="verified-chip">
+              <i class="fa-solid fa-shield-check"></i>
+              {{ 'reviews.verifiedJourney' | translate }}
+            </span>
+            <span *ngIf="review.editedAt" class="edited-chip">
+              ({{ 'reviews.edited' | translate }})
+            </span>
+          </div>
+          <div class="review-meta">
+            <span>{{ 'reviews.journeyOn' | translate:{ date: review.journeyDate } }}</span>
+            <span *ngIf="review.operatorName">• {{ review.operatorName }}</span>
+            <span>• {{ review.createdAt | date: 'mediumDate' }}</span>
+          </div>
+        </div>
+
+        <div class="review-stars-badge">
+          <i class="fa-solid fa-star"></i>
+          <span>{{ review.rating }}.0</span>
+        </div>
+      </div>
+
+      <!-- Normal View -->
+      <p *ngIf="editingReviewId !== review._id" class="review-body">{{ review.comment }}</p>
+
+      <!-- Inline Edit Mode -->
+      <div *ngIf="editingReviewId === review._id" class="inline-panel">
+        <div class="star-picker">
+          <button
+            type="button"
+            *ngFor="let star of starInputs"
+            class="star-btn"
+            (click)="editRating = star">
+            <i class="fa-solid fa-star" [class.star-filled]="star <= editRating"></i>
+          </button>
+        </div>
+        <textarea class="field-input" rows="3" [(ngModel)]="editComment"></textarea>
+        <div class="char-helper" [class.char-ok]="editComment.trim().length >= 20">
+          {{ 'reviews.charCount' | translate:{ count: editComment.trim().length } }}
+        </div>
+        <div class="action-row">
+          <button type="button" class="btn-primary-brand" (click)="saveEdit(review)">
+            {{ 'reviews.saveChanges' | translate }}
+          </button>
+          <button type="button" class="btn-outline" (click)="cancelEdit()">
+            {{ 'common.cancel' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Review Footer Actions -->
+      <div class="review-actions">
+        <ng-container *ngIf="isAuthor(review)">
+          <button
+            *ngIf="canEdit(review)"
+            type="button"
+            class="btn-link-action"
+            (click)="startEdit(review)">
+            <i class="fa-regular fa-pen-to-square"></i>
+            {{ 'reviews.edit' | translate }}
+            <span class="edit-window-hint">({{ 'reviews.editableFor' | translate:{ hours: remainingEditHours(review) } }})</span>
+          </button>
+          <span *ngIf="!canEdit(review)" class="locked-chip">
+            <i class="fa-solid fa-lock"></i>
+            {{ 'reviews.editLocked' | translate }}
+          </span>
+        </ng-container>
+
+        <button
+          *ngIf="!isAuthor(review)"
+          type="button"
+          class="btn-link-action btn-report"
+          (click)="openReport(review)">
+          <i class="fa-regular fa-flag"></i>
+          {{ 'reviews.report' | translate }}
+        </button>
+      </div>
+
+      <!-- Inline Report Box -->
+      <div *ngIf="reportingReviewId === review._id" class="inline-panel report-box">
+        <label class="field-label">{{ 'reviews.reportPrompt' | translate }}</label>
+        <select class="field-input" [(ngModel)]="selectedReportReason">
+          <option value="spam">{{ 'reviews.reportReasons.spam' | translate }}</option>
+          <option value="abusive">{{ 'reviews.reportReasons.abusive' | translate }}</option>
+          <option value="misleading">{{ 'reviews.reportReasons.misleading' | translate }}</option>
+        </select>
+        <div class="action-row">
+          <button type="button" class="btn-danger" (click)="confirmReport(review)">
+            {{ 'reviews.confirmReport' | translate }}
+          </button>
+          <button type="button" class="btn-outline" (click)="reportingReviewId = null">
+            {{ 'common.cancel' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

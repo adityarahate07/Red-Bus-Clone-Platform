@@ -1,0 +1,219 @@
+<div class="ProfilePannel">
+    <div class="leftPart">
+        <ul class="leftPannel">
+            <li class="leftPannel_eachListItem">
+                <mat-icon class="panel-icon">perm_identity</mat-icon>
+                <div class="leftPannel_eachListItem_text">
+                    {{ 'profile.dashboard' | translate }}
+                </div>
+            </li>
+            <div class="line"></div>
+            <li class="leftPannel_eachListOption" [class.active-option]="selecteditem === 'trips'" (click)="handlelistitemclick('trips')">
+                <i class="material-icons panel-icon">location_on</i>
+                <div class="leftPannel_eachListItem_text">{{ 'profile.myTrips' | translate }}</div>
+            </li>
+            <div class="line"></div>
+            <li class="leftPannel_eachListOption" [class.active-option]="selecteditem === 'activity'" (click)="handlelistitemclick('activity')">
+                <i class="material-icons panel-icon">forum</i>
+                <div class="leftPannel_eachListItem_text">{{ 'profile.activity' | translate }}</div>
+            </li>
+            <div class="line"></div>
+            <li class="leftPannel_eachListOption" [class.active-option]="selecteditem === 'notifications'" (click)="handlelistitemclick('notifications')">
+                <i class="material-icons panel-icon">notifications</i>
+                <div class="leftPannel_eachListItem_text">{{ 'profile.notifications' | translate }}</div>
+            </li>
+            <div class="line"></div>
+            <li class="leftPannel_eachListOption" [class.active-option]="selecteditem === 'profile'" (click)="handlelistitemclick('profile')">
+                <i class="material-icons panel-icon">settings</i>
+                <div class="leftPannel_eachListItem_text">{{ 'profile.myProfile' | translate }}</div>
+            </li>
+            <div class="line"></div>
+            <li class="leftPannel_eachListOption" [class.active-option]="selecteditem === 'wallet'" (click)="handlelistitemclick('wallet')">
+                <i class="material-icons panel-icon">account_balance_wallet</i>
+                <div class="leftPannel_eachListItem_text">{{ 'profile.wallet' | translate }}</div>
+            </li>
+            <div class="line"></div>
+        </ul>
+    </div>
+    <div class="seprator"></div>
+
+    <!-- My Trips -->
+    <div *ngIf="selecteditem === 'trips'" class="rightPannel">
+        <div *ngIf="!currentcustomer" class="empty-notice flex flex-wrap items-center gap-3">
+            <span>{{ 'profile.notLoggedIn' | translate }}</span>
+            <button type="button" class="pref-pill pref-pill-active" (click)="signInDemo()">
+                {{ 'navbar.demoSignIn' | translate }}
+            </button>
+        </div>
+        <div *ngIf="currentcustomer && (!mytrip || mytrip.length === 0)" class="empty-notice">
+            {{ 'profile.noTrips' | translate }}
+        </div>
+        <app-my-trip [booking]="mytrip" (statusUpdated)="onTripStatusUpdated()"></app-my-trip>
+    </div>
+
+    <!-- Community Activity & Reviews -->
+    <div *ngIf="selecteditem === 'activity'" class="rightPannel">
+        <span class="profileHeading">{{ 'profile.activity' | translate }}</span>
+
+        <div *ngIf="!currentcustomer" class="empty-notice flex flex-wrap items-center gap-3">
+            <span>{{ 'profile.notLoggedIn' | translate }}</span>
+            <button type="button" class="pref-pill pref-pill-active" (click)="signInDemo()">
+                {{ 'navbar.demoSignIn' | translate }}
+            </button>
+        </div>
+
+        <ng-container *ngIf="currentcustomer">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-[780px] mb-6">
+                <div class="stat-box rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold">{{ userActivity.posts.length }}</div>
+                    <div class="text-xs userDetailHeading mt-1">{{ 'profile.storiesPosted' | translate }}</div>
+                </div>
+                <div class="stat-box rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold">{{ userReviews.length }}</div>
+                    <div class="text-xs userDetailHeading mt-1">{{ 'profile.reviewsWritten' | translate }}</div>
+                </div>
+                <div class="stat-box rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold">{{ userActivity.commentsCount }}</div>
+                    <div class="text-xs userDetailHeading mt-1">{{ 'profile.commentsMade' | translate }}</div>
+                </div>
+                <div class="stat-box rounded-xl p-4 text-center">
+                    <div class="text-2xl font-bold">{{ userActivity.likesReceived }}</div>
+                    <div class="text-xs userDetailHeading mt-1">{{ 'profile.likesReceived' | translate }}</div>
+                </div>
+            </div>
+
+            <div class="profilebox mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-base">{{ 'profile.yourStories' | translate }}</h3>
+                    <button type="button" class="pref-pill pref-pill-active" (click)="goToCommunity()">
+                        {{ 'profile.goToCommunity' | translate }}
+                    </button>
+                </div>
+                <div *ngIf="userActivity.posts.length === 0" class="prefs-note">
+                    {{ 'profile.noStoriesYet' | translate }}
+                </div>
+                <div *ngFor="let post of userActivity.posts" class="activity-row py-3">
+                    <div class="font-semibold text-sm">{{ post.title }}</div>
+                    <div class="text-xs prefs-note mt-1">
+                        {{ ('community.topics.' + post.topic) | translate }}
+                        • {{ 'community.likes' | translate:{ count: post.likes.length } }}
+                        • {{ 'community.comments' | translate:{ count: post.comments.length } }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="profilebox">
+                <h3 class="font-bold text-base mb-4">{{ 'profile.yourReviews' | translate }}</h3>
+                <div *ngIf="userReviews.length === 0" class="prefs-note">
+                    {{ 'profile.noReviewsYet' | translate }}
+                </div>
+                <div *ngFor="let rev of userReviews" class="activity-row py-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-sm">
+                            {{ translationService.translateCity(rev.departureCity) }} → {{ translationService.translateCity(rev.arrivalCity) }}
+                        </span>
+                        <span class="text-xs font-bold text-amber-500">★ {{ rev.rating }}.0</span>
+                    </div>
+                    <p class="text-xs mt-1">{{ rev.comment }}</p>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+
+    <!-- Wallet -->
+    <div *ngIf="selecteditem === 'wallet'" class="rightPannel">
+        <div class="empty-notice">{{ 'profile.walletComingSoon' | translate }}</div>
+    </div>
+
+    <!-- Notifications History & Preferences -->
+    <div *ngIf="selecteditem === 'notifications'" class="rightPannel">
+        <app-notifications-page [embedded]="true"></app-notifications-page>
+    </div>
+
+    <!-- My Profile -->
+    <div *ngIf="selecteditem === 'profile'" class="rightPannel">
+        <span class="profileHeading">{{ 'profile.myProfile' | translate }}</span>
+        <div class="profilebox">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                <div style="display: flex; flex-direction: column; min-width: 180px;">
+                    <div class="userDetailHeading">{{ 'profile.yourName' | translate }}</div>
+                    <div class="userDetailInfo">{{ currentcustomer ? currentname : ('common.user' | translate) }}</div>
+                </div>
+                <div style="display: flex; flex-direction: column; min-width: 180px;">
+                    <div class="userDetailHeading">{{ 'profile.dateOfBirth' | translate }}</div>
+                    <div class="userDetailInfo">1993-03-04</div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                <div style="display: flex; flex-direction: column;">
+                    <div class="userDetailHeading">{{ 'profile.gender' | translate }}</div>
+                    <div class="userDetailInfo">{{ currentcustomer?.gender || '-' }}</div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 28px; gap: 12px;">
+                <div class="contactLine"></div>
+                <div class="contactDetailsHeading">{{ 'profile.contactDetails' | translate }}</div>
+                <div class="contactLine"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 20px;">
+                <div style="display: flex; flex-direction: column; min-width: 180px;">
+                    <div class="userDetailHeading">{{ 'profile.email' | translate }}</div>
+                    <div class="userDetailInfo">{{ currentcustomer ? currentemail : '-' }}</div>
+                </div>
+                <div style="display: flex; flex-direction: column; min-width: 180px;">
+                    <div class="userDetailHeading">{{ 'profile.phone' | translate }}</div>
+                    <div class="userDetailInfo">12345678</div>
+                </div>
+            </div>
+
+            <!-- Saved Theme & Language Preferences Section -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px; gap: 12px;">
+                <div class="contactLine"></div>
+                <div class="contactDetailsHeading">{{ 'profile.preferences' | translate }}</div>
+                <div class="contactLine"></div>
+            </div>
+
+            <div class="prefs-grid">
+                <div class="pref-group">
+                    <div class="userDetailHeading">{{ 'profile.themePreference' | translate }}</div>
+                    <div class="pref-buttons">
+                        <button
+                            type="button"
+                            class="pref-pill"
+                            [class.pref-pill-active]="!themeService.isDarkMode"
+                            (click)="onThemeChange('light')">
+                            <i class="fa-solid fa-sun"></i>
+                            {{ 'navbar.lightMode' | translate }}
+                        </button>
+                        <button
+                            type="button"
+                            class="pref-pill"
+                            [class.pref-pill-active]="themeService.isDarkMode"
+                            (click)="onThemeChange('dark')">
+                            <i class="fa-solid fa-moon"></i>
+                            {{ 'navbar.darkMode' | translate }}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pref-group">
+                    <div class="userDetailHeading">{{ 'profile.languagePreference' | translate }}</div>
+                    <div class="pref-buttons">
+                        <button
+                            type="button"
+                            *ngFor="let lang of languages"
+                            class="pref-pill"
+                            [class.pref-pill-active]="translationService.currentLang === lang.code"
+                            (click)="onLanguageChange(lang.code)">
+                            {{ lang.nativeLabel }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <p class="prefs-note">{{ 'profile.savedNote' | translate }}</p>
+        </div>
+    </div>
+</div>

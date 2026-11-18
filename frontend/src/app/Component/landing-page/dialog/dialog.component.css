@@ -1,0 +1,10 @@
+.dialog-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.routes-table {
+  width: 100%;
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}

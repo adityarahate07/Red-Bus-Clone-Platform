@@ -1,0 +1,231 @@
+<section
+    class="h-[32rem] bg-main-color bg-[url('assets/hero-img.png')] bg-center bg-no-repeat bg-cover flex justify-center">
+    <div class="flex flex-col items-center w-full max-w-[1400px]">
+        <h1 class="text-2xl mx-4 md:text-[2rem] text-white font-bold mt-16 mb-4 text-center drop-shadow">
+            {{ 'landing.heroTitle' | translate }}
+        </h1>
+
+        <!-- travel search section starts here -->
+        <div
+            class="search-card w-[90%] sm:w-[80%] lg:h-24 mt-4 cursor-pointer relative bottom-7 sm:bottom-0 flex flex-col lg:flex-row rounded-3xl overflow-hidden">
+            <!-- travel search left side -->
+            <div class="h-full flex flex-col sm:flex-row items-center justify-center lg:w-1/2 relative">
+                <div class="search-divider h-full border-b sm:border-r w-full md:w-[50%] sm:w-auto">
+                    <div class="px-7 py-8 flex items-center h-full gap-3">
+                        <i class="fa-solid fa-bus-simple search-icon text-2xl"></i>
+                        <input
+                            class="theme-input outline-none w-full cursor-pointer"
+                            type="text"
+                            readonly
+                            [placeholder]="'landing.fromPlaceholder' | translate"
+                            [matMenuTriggerFor]="menu"
+                            [value]="getDisplayCity(fromoption)">
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item *ngFor="let city of fromCities" (click)="fromEvent(city)">
+                                {{ ('cities.' + city) | translate }}
+                            </button>
+                        </mat-menu>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    (click)="swapCities()"
+                    [attr.aria-label]="'landing.swapCities' | translate"
+                    [title]="'landing.swapCities' | translate"
+                    class="swap-btn w-10 h-10 rounded-full grid place-content-center absolute">
+                    <i class="fa-solid fa-arrows-turn-to-dots search-icon text-xl"></i>
+                </button>
+                <div class="search-divider h-full border-b sm:border-r w-full md:w-[50%] sm:w-auto">
+                    <div class="px-7 py-8 flex items-center h-full gap-3">
+                        <i class="fa-solid fa-person-walking-luggage search-icon text-2xl"></i>
+                        <input
+                            class="theme-input outline-none w-full cursor-pointer"
+                            type="text"
+                            readonly
+                            [placeholder]="'landing.toPlaceholder' | translate"
+                            [matMenuTriggerFor]="menu2"
+                            [value]="getDisplayCity(tooption)">
+                        <mat-menu #menu2="matMenu">
+                            <button mat-menu-item *ngFor="let city of toCities" (click)="toEvent(city)">
+                                {{ ('cities.' + city) | translate }}
+                            </button>
+                        </mat-menu>
+                    </div>
+                </div>
+            </div>
+            <!-- travel search right section -->
+            <div class="search-right flex flex-col sm:flex-row lg:w-1/2">
+                <div class="search-divider h-full border-b sm:border-r sm:w-1/2 w-full">
+                    <div class="px-7 py-8 flex items-center h-full gap-3 group relative pr-12" (click)="picker.open()">
+                        <i class="fa-solid fa-calendar-days search-icon text-2xl"></i>
+                        <input matInput class="outline-none opacity-0 scale-[3] h-14 w-[30px] absolute left-14 z-10 cursor-pointer"
+                            [placeholder]="'landing.datePlaceholder' | translate"
+                            [matDatepicker]="picker"
+                            (click)="picker.open()"
+                            (dateChange)="matchDate($event)">
+                        <p class="date-display" [class.has-date]="!!date">
+                            {{ date ? date : ('landing.dateLabel' | translate) }}
+                        </p>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </div>
+                </div>
+                <button
+                    type="button"
+                    class="search-submit-btn px-7 py-8 flex items-center justify-center whitespace-nowrap text-white font-bold w-full sm:w-1/2 text-center"
+                    (click)="submit()">
+                    {{ 'landing.searchBuses' | translate }}
+                </button>
+            </div>
+        </div>
+        <!-- travel search section ends here -->
+    </div>
+</section>
+<!-- hero section ends here -->
+
+<!-- offers section starts here -->
+<section class="flex relative md:bottom-[150px] mb-20 mt-10 md:my-0 justify-center">
+    <div class="flex flex-col items-center w-full max-w-[1400px] py-6 pb-0">
+        <div class="offers-shell w-full md:w-[83%] md:p-8 flex flex-col gap-6 md:rounded-3xl">
+            <div class="flex justify-between items-center px-4 md:px-0">
+                <h2 class="offers-title text-xl md:text-3xl">{{ 'offers.trendingOffers' | translate }}</h2>
+                <button type="button"
+                    class="view-all-btn py-1 font-semibold text-base px-4 rounded-full border hover:shadow-lg">
+                    {{ 'common.viewAll' | translate }}
+                </button>
+            </div>
+            <div class="flex text-white gap-6 overflow-auto pl-4 md:pl-0">
+
+                <!-- offer card one -->
+                <div (click)="copyOfferCode('FIRST')"
+                    class="h-36 w-64 rounded-xl bg-gradient-to-r from-blue-800 to-blue-500 flex p-3 cursor-pointer flex-shrink-0">
+                    <div class="h-full grid place-content-center px-2">
+                        <img class="rounded-full w-24" src="./assets/offer1.png" alt="">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-xs px-1 py-[1px] bg-[#ffffff4c] rounded-full w-10 grid place-content-center">
+                            {{ 'offers.busTag' | translate }}
+                        </p>
+                        <h3 class="font-bold text-sm leading-5">{{ 'offers.offer1Title' | translate }}</h3>
+                        <p class="text-xs">{{ 'offers.validTill' | translate }}</p>
+                        <div class="flex gap-3 items-center">
+                            <p class="grid place-content-center bg-[#ffffff4c] h-6 font-semibold px-2 rounded-sm border border-dashed border-white text-xs">
+                                FIRST
+                            </p>
+                            <i class="fa-regular fa-copy text-xl" [title]="'offers.copyCode' | translate"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- offer card two -->
+                <div (click)="copyOfferCode('SUPERHIT')"
+                    class="h-36 w-64 rounded-xl bg-gradient-to-r from-red-800 to-red-500 flex p-3 cursor-pointer flex-shrink-0">
+                    <div class="h-full grid place-content-center px-2">
+                        <img class="rounded-full w-24" src="./assets/offer2.png" alt="">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-xs px-1 py-[1px] bg-[#ffffff4c] rounded-full w-10 grid place-content-center">
+                            {{ 'offers.busTag' | translate }}
+                        </p>
+                        <h3 class="font-bold text-sm leading-5">{{ 'offers.offer2Title' | translate }}</h3>
+                        <p class="text-xs">{{ 'offers.validTill' | translate }}</p>
+                        <div class="flex gap-3 items-center">
+                            <p class="grid place-content-center bg-[#ffffff4c] h-6 font-semibold px-2 rounded-sm border border-dashed border-white text-xs">
+                                SUPERHIT
+                            </p>
+                            <i class="fa-regular fa-copy text-xl" [title]="'offers.copyCode' | translate"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- offer card three -->
+                <div (click)="copyOfferCode('BUS300')"
+                    class="h-36 w-64 rounded-xl bg-gradient-to-r from-green-800 to-green-500 flex p-3 cursor-pointer flex-shrink-0">
+                    <div class="h-full grid place-content-center px-2">
+                        <img class="rounded-full w-24" src="./assets/offer3.png" alt="">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-xs px-1 py-[1px] bg-[#ffffff4c] rounded-full w-10 grid place-content-center">
+                            {{ 'offers.busTag' | translate }}
+                        </p>
+                        <h3 class="font-bold text-sm leading-5">{{ 'offers.offer3Title' | translate }}</h3>
+                        <p class="text-xs">{{ 'offers.validTill' | translate }}</p>
+                        <div class="flex gap-3 items-center">
+                            <p class="grid place-content-center bg-[#ffffff4c] h-6 font-semibold px-2 rounded-sm border border-dashed border-white text-xs">
+                                BUS300
+                            </p>
+                            <i class="fa-regular fa-copy text-xl" [title]="'offers.copyCode' | translate"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- offer card four -->
+                <div (click)="copyOfferCode('RBTRIP')"
+                    class="h-36 w-64 rounded-xl bg-gradient-to-r from-sky-800 to-sky-500 flex p-3 cursor-pointer flex-shrink-0">
+                    <div class="h-full grid place-content-center px-2">
+                        <img class="rounded-full w-24" src="./assets/offer4.png" alt="">
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <p class="text-xs px-1 py-[1px] bg-[#ffffff4c] rounded-full w-10 grid place-content-center">
+                            {{ 'offers.busTag' | translate }}
+                        </p>
+                        <h3 class="font-bold text-sm leading-5">{{ 'offers.offer4Title' | translate }}</h3>
+                        <p class="text-xs">{{ 'offers.validTill' | translate }}</p>
+                        <div class="flex gap-3 items-center">
+                            <p class="grid place-content-center bg-[#ffffff4c] h-6 font-semibold px-2 rounded-sm border border-dashed border-white text-xs">
+                                RBTRIP
+                            </p>
+                            <i class="fa-regular fa-copy text-xl" [title]="'offers.copyCode' | translate"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ section -->
+<section class="flex justify-center my-20 md:my-32">
+    <div class="flex flex-col w-full px-6 md:px-0 md:w-[80%] max-w-[1300px]">
+        <h1 class="faq-heading text-2xl md:text-[2.5rem] mb-6 md:mb-12">
+            {{ 'faq.heading' | translate }}
+        </h1>
+
+        <!-- faq navigation buttons -->
+        <div class="flex flex-wrap gap-6 text-sm md:text-base lg:text-lg">
+            <a href="" (click)="setFaqTab('general', $event)" class="faq-tab py-2 px-2"
+                [class.faq-tab-active]="activeFaqTab === 'general'">
+                {{ 'faq.tabs.general' | translate }}
+            </a>
+            <a href="" (click)="setFaqTab('ticket', $event)" class="faq-tab py-2 px-2"
+                [class.faq-tab-active]="activeFaqTab === 'ticket'">
+                {{ 'faq.tabs.ticketRelated' | translate }}
+            </a>
+            <a href="" (click)="setFaqTab('payment', $event)" class="faq-tab hidden sm:inline-block py-2 px-2"
+                [class.faq-tab-active]="activeFaqTab === 'payment'">
+                {{ 'faq.tabs.payment' | translate }}
+            </a>
+            <a href="" (click)="setFaqTab('cancellation', $event)" class="faq-tab hidden sm:inline-block py-2 px-2"
+                [class.faq-tab-active]="activeFaqTab === 'cancellation'">
+                {{ 'faq.tabs.cancellation' | translate }}
+            </a>
+            <a href="" (click)="setFaqTab('insurance', $event)" class="faq-tab hidden sm:inline-block py-2 px-2"
+                [class.faq-tab-active]="activeFaqTab === 'insurance'">
+                {{ 'faq.tabs.insurance' | translate }}
+            </a>
+        </div>
+
+        <!-- faq answers -->
+        <div class="flex flex-col gap-6 md:gap-8 mt-11">
+            <div *ngFor="let idx of [1, 2, 3, 4, 5, 6, 7]" class="faq-card p-4 md:p-7 cursor-pointer group rounded-2xl">
+                <div class="flex md:text-base text-sm justify-between items-center font-semibold gap-2">
+                    <h3>{{ ('faq.q' + idx) | translate }}</h3>
+                    <i class="fa-solid fa-plus inline-block group-hover:hidden"></i>
+                    <i class="fa-solid fa-minus hidden group-hover:inline-block"></i>
+                </div>
+                <div class="faq-answer text-xs md:text-sm mt-6 hidden group-hover:inline-block">
+                    <p>{{ ('faq.a' + idx) | translate }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

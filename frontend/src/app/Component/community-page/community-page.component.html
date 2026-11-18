@@ -1,0 +1,338 @@
+<div class="community-page max-w-[1280px] mx-auto px-4 md:px-8 py-8">
+  <!-- Hero Banner -->
+  <div class="community-hero rounded-2xl p-6 md:p-8 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold mb-2">{{ 'community.title' | translate }}</h1>
+      <p class="hero-subtitle text-sm md:text-base">{{ 'community.subtitle' | translate }}</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <button type="button" class="btn-brand" (click)="showComposer = !showComposer">
+        <i class="fa-solid fa-pen-nib"></i>
+        {{ 'community.newStoryBtn' | translate }}
+      </button>
+      <button *ngIf="!currentUser" type="button" class="btn-outline-theme" (click)="signInDemo()">
+        <i class="fa-solid fa-user-check"></i>
+        {{ 'navbar.demoSignIn' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Trending / Popular Stories Highlight -->
+  <section class="mb-8" *ngIf="trendingPosts.length > 0">
+    <h2 class="section-heading text-lg font-bold mb-3 flex items-center gap-2">
+      <i class="fa-solid fa-fire text-amber-500"></i>
+      {{ 'community.trendingTitle' | translate }}
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div
+        *ngFor="let post of trendingPosts"
+        (click)="focusPost(post._id)"
+        class="trending-card rounded-xl p-4 cursor-pointer flex flex-col justify-between gap-2">
+        <div>
+          <span class="topic-badge">{{ ('community.topics.' + post.topic) | translate }}</span>
+          <h3 class="font-semibold text-base mt-2 line-clamp-2">{{ post.title }}</h3>
+          <p class="text-xs muted-text mt-1">{{ post.authorName }}</p>
+        </div>
+        <div class="flex items-center gap-4 text-xs muted-text pt-2 border-t border-theme">
+          <span><i class="fa-solid fa-heart text-rose-500"></i> {{ post.likes.length }}</span>
+          <span><i class="fa-regular fa-comment"></i> {{ post.comments.length }}</span>
+          <span *ngIf="post.routeTag" class="ml-auto font-medium">{{ post.routeTag }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story Composer (Verified Users Only) -->
+  <section *ngIf="showComposer" class="composer-card rounded-2xl p-6 mb-8">
+    <h2 class="text-xl font-bold mb-4">{{ 'community.composer.heading' | translate }}</h2>
+
+    <div *ngIf="!currentUser" class="flex flex-wrap items-center gap-3">
+      <p class="muted-text text-sm">{{ 'community.composer.verifiedNotice' | translate }}</p>
+      <button type="button" class="btn-brand" (click)="signInDemo()">
+        <i class="fa-solid fa-user-check"></i>
+        {{ 'navbar.demoSignIn' | translate }}
+      </button>
+    </div>
+
+    <div *ngIf="currentUser" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="md:col-span-2">
+        <label class="field-lbl">{{ 'community.composer.titleLabel' | translate }}</label>
+        <input class="field-ctrl" type="text" [(ngModel)]="newTitle" [placeholder]="'community.composer.titlePlaceholder' | translate" />
+      </div>
+
+      <div>
+        <label class="field-lbl">{{ 'community.composer.topicLabel' | translate }}</label>
+        <select class="field-ctrl" [(ngModel)]="newTopic">
+          <option *ngFor="let topic of topics" [value]="topic">
+            {{ ('community.topics.' + topic) | translate }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label class="field-lbl">{{ 'community.composer.routeTagLabel' | translate }}</label>
+        <input class="field-ctrl" type="text" [(ngModel)]="newRouteTag" [placeholder]="'community.composer.routeTagPlaceholder' | translate" />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="field-lbl">{{ 'community.composer.storyLabel' | translate }}</label>
+        <textarea class="field-ctrl" rows="4" [(ngModel)]="newContent" [placeholder]="'community.composer.storyPlaceholder' | translate"></textarea>
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="field-lbl">{{ 'community.composer.tipsLabel' | translate }}</label>
+        <input class="field-ctrl" type="text" [(ngModel)]="newTipsInput" [placeholder]="'community.composer.tipsPlaceholder' | translate" />
+      </div>
+
+      <div>
+        <label class="field-lbl">{{ 'community.composer.photoUrlLabel' | translate }}</label>
+        <input class="field-ctrl" type="text" [(ngModel)]="newPhotoUrl" [placeholder]="'community.composer.photoUrlPlaceholder' | translate" />
+      </div>
+
+      <div class="flex items-end gap-2">
+        <label class="btn-outline-theme cursor-pointer">
+          <i class="fa-regular fa-image"></i>
+          {{ 'community.composer.uploadPhoto' | translate }}
+          <input type="file" accept="image/*" class="hidden" (change)="onPhotoSelected($event)" />
+        </label>
+        <button *ngIf="newPhotoUrl" type="button" class="btn-outline-theme" (click)="newPhotoUrl = ''">
+          {{ 'community.composer.removePhoto' | translate }}
+        </button>
+      </div>
+
+      <div *ngIf="newPhotoUrl" class="md:col-span-2">
+        <img [src]="newPhotoUrl" alt="preview" class="max-h-56 rounded-xl object-cover border border-theme" />
+      </div>
+
+      <div class="md:col-span-2 flex gap-3 pt-2">
+        <button type="button" class="btn-brand" (click)="publishStory()">
+          <i class="fa-solid fa-paper-plane"></i>
+          {{ 'community.composer.publish' | translate }}
+        </button>
+        <button type="button" class="btn-outline-theme" (click)="showComposer = false">
+          {{ 'common.cancel' | translate }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Topic Discussion Board Tabs & Search -->
+  <div class="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4 mb-6">
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="board-tab" [class.board-tab-active]="activeBoard === 'all'" (click)="activeBoard = 'all'">
+        {{ 'community.topics.all' | translate }}
+      </button>
+      <button
+        type="button"
+        *ngFor="let topic of topics"
+        class="board-tab"
+        [class.board-tab-active]="activeBoard === topic"
+        (click)="activeBoard = topic">
+        {{ ('community.topics.' + topic) | translate }}
+      </button>
+      <button
+        type="button"
+        class="board-tab mod-tab"
+        [class.board-tab-active]="activeBoard === 'moderation'"
+        (click)="activeBoard = 'moderation'">
+        <i class="fa-solid fa-shield-halved"></i>
+        {{ 'community.topics.moderation' | translate }}
+        <span class="mod-count" *ngIf="moderationPosts.length > 0">{{ moderationPosts.length }}</span>
+      </button>
+    </div>
+
+    <div class="flex gap-2" *ngIf="activeBoard !== 'moderation'">
+      <input
+        class="field-ctrl search-ctrl"
+        type="text"
+        [(ngModel)]="searchQuery"
+        [placeholder]="'community.searchPlaceholder' | translate" />
+      <select class="field-ctrl sort-ctrl" [(ngModel)]="sortBy">
+        <option value="latest">{{ 'community.sortLatest' | translate }}</option>
+        <option value="popular">{{ 'community.sortPopular' | translate }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Moderation Queue View -->
+  <section *ngIf="activeBoard === 'moderation'">
+    <div class="mb-4">
+      <h2 class="text-xl font-bold">{{ 'community.moderation.heading' | translate }}</h2>
+      <p class="text-sm muted-text">{{ 'community.moderation.description' | translate }}</p>
+    </div>
+
+    <div *ngIf="moderationPosts.length === 0" class="empty-box rounded-xl p-8 text-center">
+      {{ 'community.moderation.empty' | translate }}
+    </div>
+
+    <div *ngFor="let post of moderationPosts" class="post-card rounded-2xl p-5 mb-4">
+      <div class="flex flex-wrap justify-between items-start gap-3 mb-2">
+        <div>
+          <span class="status-pill" [class.pill-hidden]="post.status === 'hidden'">
+            {{ (post.status === 'hidden' ? 'community.moderation.hidden' : 'community.moderation.flagged') | translate }}
+          </span>
+          <span class="ml-2 text-xs muted-text">
+            {{ 'community.moderation.reportsCount' | translate:{ count: post.reports.length } }}
+          </span>
+          <h3 class="text-lg font-bold mt-2">{{ post.title }}</h3>
+          <p class="text-xs muted-text">{{ post.authorName }} • {{ post.createdAt | date: 'medium' }}</p>
+        </div>
+        <span class="topic-badge">{{ ('community.topics.' + post.topic) | translate }}</span>
+      </div>
+
+      <p class="text-sm my-3">{{ post.content }}</p>
+
+      <div *ngIf="post.reports.length > 0" class="reports-summary rounded-lg p-3 mb-4 text-xs">
+        <div *ngFor="let rep of post.reports">
+          <strong>{{ rep.userName || 'Traveler' }}:</strong> {{ rep.reason }}
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="btn-approve" (click)="moderate(post, 'approve')">
+          <i class="fa-solid fa-check"></i>
+          {{ 'community.moderation.approve' | translate }}
+        </button>
+        <button *ngIf="post.status !== 'hidden'" type="button" class="btn-outline-theme" (click)="moderate(post, 'hide')">
+          <i class="fa-regular fa-eye-slash"></i>
+          {{ 'community.moderation.hide' | translate }}
+        </button>
+        <button type="button" class="btn-danger-solid" (click)="moderate(post, 'remove')">
+          <i class="fa-solid fa-trash"></i>
+          {{ 'community.moderation.remove' | translate }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Public Community Feed -->
+  <section *ngIf="activeBoard !== 'moderation'">
+    <div *ngIf="visiblePosts.length === 0" class="empty-box rounded-xl p-8 text-center">
+      {{ 'community.noPosts' | translate }}
+    </div>
+
+    <article *ngFor="let post of visiblePosts" [id]="'post-' + post._id" class="post-card rounded-2xl p-5 md:p-6 mb-5">
+      <div class="flex flex-wrap justify-between items-start gap-2 mb-3">
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <strong class="text-base">{{ post.authorName }}</strong>
+            <span *ngIf="post.authorVerified" class="verified-pill">
+              <i class="fa-solid fa-circle-check"></i>
+              {{ 'community.verifiedBadge' | translate }}
+            </span>
+            <span *ngIf="post.status === 'flagged'" class="status-pill">
+              {{ 'community.moderation.flagged' | translate }}
+            </span>
+          </div>
+          <div class="text-xs muted-text mt-1">
+            {{ post.createdAt | date: 'mediumDate' }}
+            <span *ngIf="post.routeTag"> • {{ post.routeTag }}</span>
+          </div>
+        </div>
+        <span class="topic-badge">{{ ('community.topics.' + post.topic) | translate }}</span>
+      </div>
+
+      <h3 class="text-xl font-bold mb-2">{{ post.title }}</h3>
+      <p class="story-body text-sm md:text-base mb-4">{{ post.content }}</p>
+
+      <div *ngIf="post.photoUrl" class="mb-4">
+        <img [src]="post.photoUrl" [alt]="post.title" class="w-full max-h-80 object-cover rounded-xl border border-theme" />
+      </div>
+
+      <div *ngIf="post.travelTips.length > 0" class="tips-box rounded-xl p-3 mb-4">
+        <div class="text-xs font-bold uppercase mb-2">{{ 'community.tipsHeading' | translate }}</div>
+        <div class="flex flex-wrap gap-2">
+          <span *ngFor="let tip of post.travelTips" class="tip-chip">
+            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+            {{ tip }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Post Action Bar: Like, Comment, Share, Report -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-theme">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" class="post-action-btn" [class.liked-btn]="hasLiked(post)" (click)="toggleLike(post)">
+            <i class="fa-heart" [ngClass]="hasLiked(post) ? 'fa-solid' : 'fa-regular'"></i>
+            {{ 'community.likes' | translate:{ count: post.likes.length } }}
+          </button>
+
+          <button type="button" class="post-action-btn" (click)="toggleComments(post._id)">
+            <i class="fa-regular fa-comment"></i>
+            {{ 'community.comments' | translate:{ count: post.comments.length } }}
+          </button>
+
+          <button type="button" class="post-action-btn" [matMenuTriggerFor]="shareMenu">
+            <i class="fa-solid fa-share-nodes"></i>
+            {{ 'community.share' | translate }}
+          </button>
+          <mat-menu #shareMenu="matMenu">
+            <button mat-menu-item (click)="sharePost(post, 'whatsapp')">
+              <i class="fa-brands fa-whatsapp mr-2 text-green-500"></i>
+              {{ 'community.shareWhatsApp' | translate }}
+            </button>
+            <button mat-menu-item (click)="sharePost(post, 'twitter')">
+              <i class="fa-brands fa-x-twitter mr-2"></i>
+              {{ 'community.shareTwitter' | translate }}
+            </button>
+            <button mat-menu-item (click)="sharePost(post, 'facebook')">
+              <i class="fa-brands fa-facebook mr-2 text-blue-600"></i>
+              {{ 'community.shareFacebook' | translate }}
+            </button>
+            <button mat-menu-item (click)="sharePost(post, 'copy')">
+              <i class="fa-regular fa-copy mr-2"></i>
+              {{ 'community.copyLink' | translate }}
+            </button>
+          </mat-menu>
+        </div>
+
+        <button type="button" class="post-action-btn report-action" (click)="openReport(post._id)">
+          <i class="fa-regular fa-flag"></i>
+          {{ 'community.reportPost' | translate }}
+        </button>
+      </div>
+
+      <!-- Report Inline Panel -->
+      <div *ngIf="reportingPostId === post._id" class="mt-3 p-3 rounded-lg sub-panel">
+        <div class="flex flex-wrap items-center gap-2">
+          <select class="field-ctrl flex-1" [(ngModel)]="reportReasonKey">
+            <option value="inappropriate">{{ 'community.reportReasons.inappropriate' | translate }}</option>
+            <option value="spam">{{ 'community.reportReasons.spam' | translate }}</option>
+            <option value="misinformation">{{ 'community.reportReasons.misinformation' | translate }}</option>
+          </select>
+          <button type="button" class="btn-danger-solid" (click)="submitReport(post)">
+            {{ 'community.reportConfirm' | translate }}
+          </button>
+          <button type="button" class="btn-outline-theme" (click)="reportingPostId = null">
+            {{ 'common.cancel' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Comments Panel -->
+      <div *ngIf="expandedComments[post._id]" class="mt-4 pt-3 border-t border-theme">
+        <div *ngIf="post.comments.length === 0" class="text-xs muted-text mb-3">
+          {{ 'community.noComments' | translate }}
+        </div>
+        <div *ngFor="let c of post.comments" class="comment-item rounded-lg p-3 mb-2">
+          <div class="flex justify-between text-xs mb-1">
+            <strong>{{ c.userName }}</strong>
+            <span class="muted-text">{{ c.createdAt | date: 'short' }}</span>
+          </div>
+          <p class="text-sm">{{ c.text }}</p>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <input
+            class="field-ctrl flex-1"
+            type="text"
+            [(ngModel)]="commentDrafts[post._id]"
+            (keyup.enter)="addComment(post)"
+            [placeholder]="'community.addCommentPlaceholder' | translate" />
+          <button type="button" class="btn-brand" (click)="addComment(post)">
+            {{ 'community.postComment' | translate }}
+          </button>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>
