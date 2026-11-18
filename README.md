@@ -6,15 +6,26 @@ TedBus is a full-stack bus booking application built with the MEAN stack and ins
 
 The app combines a booking flow with six additional features: a travel community, event notifications, an interactive route planner, three-language support, light/dark themes, and verified route reviews. The Angular frontend can also run without the API, using local storage and mock-data fallbacks for supported features.
 
+## Contents
+
+- [Features](#features)
+- [API overview](#api-overview)
+- [Tech stack](#tech-stack)
+- [Run locally](#run-locally)
+- [Project layout](#project-layout)
+- [Deployment](#deployment)
+
 ## Features
 
 ### Booking essentials
+
 - Search bus routes between supported Indian cities and choose a travel date.
 - Browse bus options, select seats from an interactive layout, enter passenger details, and continue to checkout.
 - Sign in with Google OAuth or use the demo sign-in flow.
 - View booked trips and manage trip and profile preferences.
 
 ### Additional features
+
 | Feature | What it includes |
 | --- | --- |
 | **Travel community** (`/community`) | Publish journey stories and photos, search and sort posts, like and comment, share posts, and report or moderate content. |
@@ -25,6 +36,20 @@ The app combines a booking flow with six additional features: a travel community
 | **Route ratings & reviews** (`/select-bus`) | Verified journey reviews, route ratings, one review per booking, time-limited editing, and review reporting. |
 
 The profile area also brings together trips, preferences, and community activity. When the API is available, the Express backend exposes endpoints for community posts, notifications, saved routes, and reviews.
+
+## API overview
+
+The local API base URL is `http://localhost:5000`. The main endpoint groups are:
+
+| Area | Endpoints |
+| --- | --- |
+| Bookings | `POST /booking`, `GET /booking/:id`, `PATCH /booking/:id/status` |
+| Routes | `GET /routes/:departure/:arrival/:date` |
+| Customer preferences | `POST /customer`, `PATCH /customer/:id/preferences` |
+| Community | `GET/POST /community/posts`; `POST /community/posts/:id/like`, `/comments`, and `/report`; `PATCH /community/posts/:id/moderate` |
+| Notifications | `GET /notifications/user/:userId`, `POST /notifications`, `POST /notifications/:id/retry`, `PATCH /notifications/:id/read`, `PATCH /notifications/user/:userId/read-all`, `PUT /notifications/preferences/:userId` |
+| Saved routes | `GET /saved-routes/user/:userId`, `POST /saved-routes`, `DELETE /saved-routes/:id` |
+| Reviews | `GET /reviews/route/:routeKey`, `GET /reviews/user/:userId`, `POST /reviews`, `PUT /reviews/:id`, `POST /reviews/:id/report` |
 
 ## Tech stack
 
@@ -41,13 +66,16 @@ The profile area also brings together trips, preferences, and community activity
 
 ### 1. Start the API
 
-In a terminal, configure the database connection in `frontend/server/.env` (copy `.env.example` and replace the sample URI if needed). The `.env` file is local-only and must not be committed. Then start the API:
+In a terminal, create a local environment file from the example and replace the sample URI if needed. The `.env` file is local-only and must not be committed.
 
 ```bash
 cd frontend/server
+cp .env.example .env
 npm install
 npm start
 ```
+
+On Windows PowerShell, use `Copy-Item .env.example .env` instead of `cp`. Edit `.env` and set `MONGODB_URI` to your local MongoDB or Atlas connection string.
 
 The API listens on `http://localhost:5000`. If `MONGODB_URI` is not set, the server starts with a warning and database-backed API features are unavailable; supported frontend features can still use their local fallback data.
 
